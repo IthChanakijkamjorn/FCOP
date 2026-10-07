@@ -43,6 +43,39 @@ describe('weighted selection', () => {
   })
 })
 
+describe('player dataset integrity', () => {
+  const roleChecks = {
+    GK: (position) => position === 'GK',
+    DEF: (position) => ['CB', 'RB', 'LB', 'RWB', 'LWB'].includes(position),
+    MID: (position) => ['CDM', 'CM', 'CAM', 'LM', 'RM'].includes(position),
+    FWD: (position) => ['LW', 'RW', 'ST', 'CF'].includes(position)
+  }
+
+  it('contains at least 100 players', () => {
+    expect(PLAYERS.length).toBeGreaterThanOrEqual(100)
+  })
+
+  it('keeps every class stocked with balanced roles', () => {
+    const classes = ['Bronze', 'Silver', 'Gold', 'Elite', 'Legend']
+
+    for (const cardClass of classes) {
+      const classPlayers = PLAYERS.filter((player) => player.cardClass === cardClass)
+      expect(classPlayers.length).toBeGreaterThan(0)
+
+      for (const hasRole of Object.values(roleChecks)) {
+        expect(classPlayers.some((player) => hasRole(player.position))).toBe(true)
+      }
+    }
+  })
+
+  it('includes local portrait and logo paths', () => {
+    for (const player of PLAYERS) {
+      expect(player.portrait).toMatch(/^\/assets\/players\/.+\.svg$/)
+      expect(player.teamLogo).toMatch(/^\/assets\/teams\/.+\.svg$/)
+    }
+  })
+})
+
 describe('reveal state transitions', () => {
   it('moves from open to reveal', () => {
     let state = createRevealState()

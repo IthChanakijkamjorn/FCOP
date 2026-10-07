@@ -14,6 +14,9 @@ const REVEAL_STEPS = [
   'Locking final reveal'
 ]
 
+const FALLBACK_PORTRAIT = '/assets/players/default.svg'
+const FALLBACK_TEAM_LOGO = '/assets/teams/default.svg'
+
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 let selectedPackId = PACKS[2].id
@@ -28,7 +31,7 @@ app.innerHTML = `
     <header class="hero">
       <p class="badge">Fan-made Demo Pack Opener</p>
       <h1>Football Pack Opening Studio</h1>
-      <p class="lead">Open themed demo packs, enjoy a dramatic reveal, and discover fictional football stars.</p>
+      <p class="lead">Open themed demo packs, enjoy a dramatic reveal, and discover real-world footballers with unofficial demo ratings and values.</p>
     </header>
 
     <section class="layout" aria-label="Pack opening panel">
@@ -59,7 +62,7 @@ app.innerHTML = `
       <aside class="panel info" aria-labelledby="info-title">
         <h2 id="info-title">Odds & demo info</h2>
         <ul id="odds-list" class="odds-list"></ul>
-        <p class="disclaimer">Drop rates and values are fictional demo data for UI prototyping only.</p>
+        <p class="disclaimer">All ratings, drop rates, and values are unofficial fictional demo data for this personal fan project.</p>
         <button id="reset-btn" class="btn btn-subtle" type="button">Reset Demo</button>
       </aside>
     </section>
@@ -128,6 +131,8 @@ function renderResultCard() {
 
   const { player } = currentDrop
   const classStyle = CLASS_STYLES[player.cardClass]
+  const portrait = player.portrait ?? FALLBACK_PORTRAIT
+  const teamLogo = player.teamLogo ?? FALLBACK_TEAM_LOGO
 
   resultCard.className = `result-card ${player.cardClass.toLowerCase()}`
   resultCard.style.setProperty('--class-accent', classStyle.accent)
@@ -136,19 +141,28 @@ function renderResultCard() {
       <p class="result-rating">${player.rating}</p>
       <p class="result-position">${player.position}</p>
     </div>
-    <div class="result-avatar" aria-hidden="true">${player.name
-      .split(' ')
-      .map((part) => part[0])
-      .join('')
-      .slice(0, 2)}</div>
+    <div class="result-avatar">
+      <img class="result-portrait" src="${portrait}" alt="${player.name} portrait" loading="lazy">
+    </div>
     <div class="result-body">
       <h3>${player.name}</h3>
       <p><span>Nation</span><strong>${player.nation}</strong></p>
-      <p><span>Team</span><strong>${player.team}</strong></p>
+      <p><span>Team</span><strong class="result-team"><img class="team-logo" src="${teamLogo}" alt="${player.team} logo" loading="lazy"> ${player.team}</strong></p>
       <p><span>Class</span><strong>${classStyle.label}</strong></p>
       <p><span>Value</span><strong>${player.valueLabel}</strong></p>
     </div>
   `
+
+  const portraitImage = resultCard.querySelector('.result-portrait')
+  const logoImage = resultCard.querySelector('.team-logo')
+
+  portraitImage?.addEventListener('error', () => {
+    portraitImage.src = FALLBACK_PORTRAIT
+  }, { once: true })
+
+  logoImage?.addEventListener('error', () => {
+    logoImage.src = FALLBACK_TEAM_LOGO
+  }, { once: true })
 }
 
 function renderRevealState() {

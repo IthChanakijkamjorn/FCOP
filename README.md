@@ -2,7 +2,7 @@
 
 A fan-made, single-page football pack-opening demo inspired by the excitement of football games.
 
-> This project is an original demo experience. All packs, drop rates, players, teams, and values are fictional and for presentation/testing only.
+> This project is an original fan-made demo experience. Real-world players and clubs may appear, but all ratings, drop rates, and values are unofficial fictional demo data for presentation/testing only.
 
 ## Features
 
@@ -14,7 +14,7 @@ A fan-made, single-page football pack-opening demo inspired by the excitement of
   - Legend Vault
 - Distinct visual themes, demo cost labels, and fictional drop rates per pack
 - Animated reveal flow with suspense stages, burst phase, skip control, and open-again interaction
-- Fictional footballer cards with rating, position, nation, team label, class, and demo value label
+- Footballer cards with rating, position, nation, team label, class, demo value label, portrait support, and club/team logo support
 - Keyboard-accessible controls, visible focus states, and aria-live reveal announcements
 - Reduced-motion support via `prefers-reduced-motion`
 - Testable logic modules for pack selection, weighted drops, and reveal-state transitions
