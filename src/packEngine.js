@@ -5,6 +5,14 @@ export const REVEAL_PHASE = {
   REVEALED: 'revealed'
 }
 
+export const REVEAL_STAGES = [
+  { key: 'position', label: 'Position', soundHook: 'stage-reveal' },
+  { key: 'nation', label: 'Nationality', soundHook: 'stage-reveal' },
+  { key: 'team', label: 'Team', soundHook: 'team-reveal' },
+  { key: 'rating', label: 'Overall Rating', soundHook: 'rating-reveal' },
+  { key: 'final', label: 'Final Reveal', soundHook: 'final-reveal' }
+]
+
 export function getPackById(packs, id) {
   return packs.find((pack) => pack.id === id) ?? packs[0]
 }
@@ -48,6 +56,52 @@ export function createRevealState() {
     phase: REVEAL_PHASE.IDLE,
     stageIndex: 0
   }
+}
+
+export function createRevealTimeline({ stageDelay, burstDelay, finalDelay } = {}) {
+  const resolvedStageDelay = stageDelay ?? 700
+  const resolvedBurstDelay = burstDelay ?? 540
+  const resolvedFinalDelay = finalDelay ?? 260
+  const timeline = []
+
+  for (const stage of REVEAL_STAGES.slice(0, -1)) {
+    timeline.push({
+      type: 'NEXT_STAGE',
+      delay: resolvedStageDelay,
+      stageKey: stage.key,
+      soundHook: stage.soundHook
+    })
+  }
+
+  timeline.push({ type: 'BURST', delay: resolvedBurstDelay, soundHook: 'stage-reveal' })
+  timeline.push({ type: 'REVEAL', delay: resolvedFinalDelay, soundHook: 'final-reveal' })
+
+  return timeline
+}
+
+export function getRevealVisibility(phase, stageIndex) {
+  const visible = {
+    position: false,
+    nation: false,
+    team: false,
+    rating: false,
+    final: false
+  }
+
+  if (phase === REVEAL_PHASE.IDLE) {
+    return visible
+  }
+
+  const revealedCount =
+    phase === REVEAL_PHASE.REVEALED
+      ? REVEAL_STAGES.length
+      : Math.max(0, Math.min(stageIndex, REVEAL_STAGES.length - 1))
+
+  for (const stage of REVEAL_STAGES.slice(0, revealedCount)) {
+    visible[stage.key] = true
+  }
+
+  return visible
 }
 
 export function transitionReveal(state, event) {
